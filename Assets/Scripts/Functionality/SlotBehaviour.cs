@@ -49,6 +49,10 @@ public class SlotBehaviour : MonoBehaviour
     private Button BetPlus_Button;
     [SerializeField]
     private Button BetMinus_Button;
+    [SerializeField]
+    private Button LinePlus_Button;
+    [SerializeField]
+    private Button LineMinus_Button;
 
     [Header("Animated Sprites")]
     [SerializeField]
@@ -158,6 +162,11 @@ public class SlotBehaviour : MonoBehaviour
         if (BetPlus_Button) BetPlus_Button.onClick.AddListener(delegate { ChangeBet(true); });
         if (BetMinus_Button) BetMinus_Button.onClick.RemoveAllListeners();
         if (BetMinus_Button) BetMinus_Button.onClick.AddListener(delegate { ChangeBet(false); });
+
+        if (LinePlus_Button) LinePlus_Button.onClick.RemoveAllListeners();
+        if (LinePlus_Button) LinePlus_Button.onClick.AddListener(delegate { ChangeBet(true); });
+        if (LineMinus_Button) LineMinus_Button.onClick.RemoveAllListeners();
+        if (LineMinus_Button) LineMinus_Button.onClick.AddListener(delegate { ChangeBet(false); });
 
         if (MaxBet_Button) MaxBet_Button.onClick.RemoveAllListeners();
         if (MaxBet_Button) MaxBet_Button.onClick.AddListener(MaxBet);
@@ -759,7 +768,8 @@ public class SlotBehaviour : MonoBehaviour
         if (AutoSpin_Button) AutoSpin_Button.interactable = toggle;
         if (BetMinus_Button) BetMinus_Button.interactable = toggle;
         if (BetPlus_Button) BetPlus_Button.interactable = toggle;
-
+        if (LinePlus_Button) LinePlus_Button.interactable = toggle;
+        if (LineMinus_Button) LineMinus_Button.interactable = toggle;
     }
 
     //start the icons animation

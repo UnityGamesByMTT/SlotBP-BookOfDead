@@ -21,6 +21,8 @@ public class ImageAnimation : MonoBehaviour
 
 	public bool doLoopAnimation = true;
 
+	public bool playOnAwake = false;
+
 	[HideInInspector]
 	public ImageState currentAnimationState;
 
@@ -42,7 +44,15 @@ public class ImageAnimation : MonoBehaviour
 		}
 	}
 
-	private void OnEnable()
+    private void Start()
+    {
+        if (playOnAwake)
+        {
+			StartAnimation();
+        }
+    }
+
+    private void OnEnable()
 	{
 
 	}
