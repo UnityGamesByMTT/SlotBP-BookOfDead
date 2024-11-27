@@ -83,6 +83,18 @@ public class UIManager : MonoBehaviour
     private TMP_Text Bonus_Text;
     [SerializeField]
     private TMP_Text Wild_Text;
+    [SerializeField]
+    private GameObject[] m_Page_Reference;
+    [SerializeField]
+    private Toggle[] m_Page_Toggle;
+    [SerializeField]
+    private Button m_LeftNavigation;
+    [SerializeField]
+    private Button m_RightNavigation;
+    [SerializeField]
+    private Button m_ExitPaytable;
+    [SerializeField]
+    private int m_CurrentPageCount = 0;
 
     [Header("Settings Popup")]
     [SerializeField]
@@ -198,7 +210,7 @@ public class UIManager : MonoBehaviour
     {
         //if (Loading_Object) Loading_Object.SetActive(true);
         //StartCoroutine(LoadingRoutine());
-        SimulateClickByDefault();
+        //SimulateClickByDefault();
     }
 
     private IEnumerator LoadingRoutine()
@@ -251,7 +263,7 @@ public class UIManager : MonoBehaviour
         if (AboutExit_Button) AboutExit_Button.onClick.AddListener(delegate { ClosePopup(AboutPopup_Object); });
 
         if (Paytable_Button) Paytable_Button.onClick.RemoveAllListeners();
-        if (Paytable_Button) Paytable_Button.onClick.AddListener(delegate { OpenPopup(PaytablePopup_Object); });
+        if (Paytable_Button) Paytable_Button.onClick.AddListener(delegate { NextPrevPaytable(true, false); });
 
         if (PaytableExit_Button) PaytableExit_Button.onClick.RemoveAllListeners();
         if (PaytableExit_Button) PaytableExit_Button.onClick.AddListener(delegate { ClosePopup(PaytablePopup_Object); });
@@ -321,6 +333,72 @@ public class UIManager : MonoBehaviour
         if (Music_Button) Music_Button.onClick.RemoveAllListeners();
         if (Music_Button) Music_Button.onClick.AddListener(ToggleMusic);
 
+        if (m_LeftNavigation) m_LeftNavigation.onClick.RemoveAllListeners();
+        if (m_LeftNavigation) m_LeftNavigation.onClick.AddListener(() =>
+        {
+            NextPrevPaytable(false, true);
+        });
+
+        if (m_RightNavigation) m_RightNavigation.onClick.RemoveAllListeners();
+        if (m_RightNavigation) m_RightNavigation.onClick.AddListener(() =>
+        {
+            NextPrevPaytable(true, true);
+        });
+
+        if (m_ExitPaytable) m_ExitPaytable.onClick.RemoveAllListeners();
+        if (m_ExitPaytable) m_ExitPaytable.onClick.AddListener(() =>
+        {
+            PaytablePopup_Object.SetActive(false);
+        });
+
+        TogglePaytable(0);
+
+        m_Page_Toggle[0].onValueChanged.AddListener((b) => { TogglePaytable(0); });
+        m_Page_Toggle[1].onValueChanged.AddListener((b) => { TogglePaytable(1); });
+        m_Page_Toggle[2].onValueChanged.AddListener((b) => { TogglePaytable(2); });
+    }
+
+    private void TogglePaytable(int index)
+    {
+        m_CurrentPageCount = index;
+        for (int i = 0; i < m_Page_Reference.Length; i++)
+        {
+            if(i == index)
+            {
+                m_Page_Reference[i].SetActive(true);
+            }
+            else
+            {
+                m_Page_Reference[i].SetActive(false);
+            }
+        }
+    }
+
+    private void NextPrevPaytable(bool next_prev, bool m_navigationMode)
+    {
+        //if (m_CurrentPageCount == 0) PaytablePopup_Object.SetActive(true);
+        if (next_prev)
+        {
+            m_CurrentPageCount++;
+            if (m_CurrentPageCount == 3)
+            {
+                if (!m_navigationMode)
+                {
+                    PaytablePopup_Object.SetActive(false);
+                }
+                m_CurrentPageCount = 0;
+            };
+        }
+        else
+        {
+            m_CurrentPageCount--;
+            if (m_CurrentPageCount == -1)
+            {
+                m_CurrentPageCount = 2;
+            }
+        }
+
+        TogglePaytable(m_CurrentPageCount);
     }
 
     private void SimulateClickByDefault()
