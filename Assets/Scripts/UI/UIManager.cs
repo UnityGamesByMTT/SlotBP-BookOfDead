@@ -263,7 +263,7 @@ public class UIManager : MonoBehaviour
         if (AboutExit_Button) AboutExit_Button.onClick.AddListener(delegate { ClosePopup(AboutPopup_Object); });
 
         if (Paytable_Button) Paytable_Button.onClick.RemoveAllListeners();
-        if (Paytable_Button) Paytable_Button.onClick.AddListener(delegate { NextPrevPaytable(true, false); });
+        if (Paytable_Button) Paytable_Button.onClick.AddListener(delegate { if (!PaytablePopup_Object.activeSelf) { m_CurrentPageCount = -1; }; NextPrevPaytable(true, false); });
 
         if (PaytableExit_Button) PaytableExit_Button.onClick.RemoveAllListeners();
         if (PaytableExit_Button) PaytableExit_Button.onClick.AddListener(delegate { ClosePopup(PaytablePopup_Object); });
@@ -351,8 +351,6 @@ public class UIManager : MonoBehaviour
             PaytablePopup_Object.SetActive(false);
         });
 
-        TogglePaytable(0);
-
         m_Page_Toggle[0].onValueChanged.AddListener((b) => { TogglePaytable(0); });
         m_Page_Toggle[1].onValueChanged.AddListener((b) => { TogglePaytable(1); });
         m_Page_Toggle[2].onValueChanged.AddListener((b) => { TogglePaytable(2); });
@@ -361,22 +359,32 @@ public class UIManager : MonoBehaviour
     private void TogglePaytable(int index)
     {
         m_CurrentPageCount = index;
+        m_Page_Reference[m_CurrentPageCount].SetActive(true);
+
+        // Disable events temporarily
+        foreach (var toggle in m_Page_Toggle)
+            toggle.onValueChanged.RemoveAllListeners();
+
+        m_Page_Toggle[m_CurrentPageCount].isOn = true;
+
         for (int i = 0; i < m_Page_Reference.Length; i++)
         {
-            if(i == index)
-            {
-                m_Page_Reference[i].SetActive(true);
-            }
-            else
+            if (i != index)
             {
                 m_Page_Reference[i].SetActive(false);
+                //m_Page_Toggle[i].isOn = false;
             }
         }
+
+        // Reattach listeners
+        m_Page_Toggle[0].onValueChanged.AddListener((b) => { if (b) TogglePaytable(0); });
+        m_Page_Toggle[1].onValueChanged.AddListener((b) => { if (b) TogglePaytable(1); });
+        m_Page_Toggle[2].onValueChanged.AddListener((b) => { if (b) TogglePaytable(2); });
     }
 
     private void NextPrevPaytable(bool next_prev, bool m_navigationMode)
     {
-        //if (m_CurrentPageCount == 0) PaytablePopup_Object.SetActive(true);
+        if (m_CurrentPageCount == -1) PaytablePopup_Object.SetActive(true);
         if (next_prev)
         {
             m_CurrentPageCount++;
@@ -388,6 +396,8 @@ public class UIManager : MonoBehaviour
                 }
                 m_CurrentPageCount = 0;
             };
+            
+            TogglePaytable(m_CurrentPageCount);
         }
         else
         {
@@ -396,9 +406,9 @@ public class UIManager : MonoBehaviour
             {
                 m_CurrentPageCount = 2;
             }
-        }
 
-        TogglePaytable(m_CurrentPageCount);
+            TogglePaytable(m_CurrentPageCount);
+        }
     }
 
     private void SimulateClickByDefault()
